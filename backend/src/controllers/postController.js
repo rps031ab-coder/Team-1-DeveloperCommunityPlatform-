@@ -67,15 +67,6 @@ function getPostById(req, res) {
 
 }
 
-
-module.exports = {
-
-    getAllPosts,
-    getPostById
-
-};
-
-
 function createPost(req, res) {
 
     const newPost = {
@@ -93,6 +84,15 @@ function createPost(req, res) {
         commentCount: 0
 
     };
+
     posts.push(newPost);
+
     return res.status(201).json(newPost);
 }
+
+module.exports = {
+
+    getAllPosts,
+    getPostById,
+    createPost
+};

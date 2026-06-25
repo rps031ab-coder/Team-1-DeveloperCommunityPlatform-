@@ -1,10 +1,11 @@
 const express = require("express");
 
-const userRoutes = require("./routes/userRoutes");
-const postRoutes = require("./routes/postRoutes");
-
 const app = express();
 
-app.use(userRoutes);
-app.use(postRoutes);
+const postRoutes = require("./routes/postRoutes");
+
+app.use(express.json());
+
+app.use("/posts", postRoutes);
+
 module.exports = app;
