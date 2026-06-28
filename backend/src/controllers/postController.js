@@ -90,9 +90,31 @@ function createPost(req, res) {
     return res.status(201).json(newPost);
 }
 
+function updatePost(req, res) {
+
+    const id = Number(req.params.id);
+
+    const post = posts.find(function (currentPost) {
+        return currentPost.id === id;
+    });
+
+    if (post === undefined) {
+        return res.status(404).json({
+            message: "Post not found"
+        });
+    }
+
+    post.title = req.body.title;
+    post.author = req.body.author;
+    post.tags = req.body.tags;
+
+    return res.json(post);
+}
+
 module.exports = {
 
     getAllPosts,
     getPostById,
-    createPost
+    createPost,
+    updatePost
 };

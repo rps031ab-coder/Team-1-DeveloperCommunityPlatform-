@@ -1,3 +1,4 @@
+const validatePostMiddleware = require("../middlewares/validatePostMiddleware");
 const express = require("express");
 
 const router = express.Router();
@@ -5,13 +6,14 @@ const router = express.Router();
 const {
   getAllPosts,
   getPostById,
-  createPost
+  createPost,
+  updatePost
 } = require("../controllers/postController");
 
 router.get("/", getAllPosts);
 
 router.get("/:id", getPostById);
 
-router.post("/", createPost);
-
+router.post("/", validatePostMiddleware, createPost);
+router.put("/:id", validatePostMiddleware, updatePost);
 module.exports = router;
