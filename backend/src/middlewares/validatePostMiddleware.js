@@ -1,6 +1,5 @@
 function validatePostMiddleware(req, res, next) {
-
-    const { title, author, tags } = req.body;
+    const { title, content, tags } = req.body;
 
     if (!title) {
         return res.status(400).json({
@@ -8,9 +7,9 @@ function validatePostMiddleware(req, res, next) {
         });
     }
 
-    if (!author) {
+    if (!content) {
         return res.status(400).json({
-            message: "Author is required"
+            message: "Content is required"
         });
     }
 

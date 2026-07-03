@@ -1,15 +1,11 @@
-const Post = require("../models/Post");
+const postService = require("../services/postService");
 
 /**
  * GET /posts
  */
 const getAllPosts = async (req, res) => {
     try {
-        const author = req.query.author;
-
-        const query = author ? { author } : {};
-
-        const posts = await Post.find(query);
+        const posts = await postService.getAllPosts(req.query.author);
 
         return res.status(200).json(posts);
     } catch (error) {
@@ -25,9 +21,7 @@ const getAllPosts = async (req, res) => {
  */
 const getPostById = async (req, res) => {
     try {
-        const id = req.params.id;
-
-        const post = await Post.findById(id);
+        const post = await postService.getPostById(req.params.id);
 
         if (!post) {
             return res.status(404).json({
@@ -49,13 +43,7 @@ const getPostById = async (req, res) => {
  */
 const createPost = async (req, res) => {
     try {
-        const newPost = await Post.create({
-            title: req.body.title,
-            author: req.body.author,
-            tags: req.body.tags,
-            likes: 0,
-            commentCount: 0
-        });
+        const newPost = await postService.createPost(req.body);
 
         return res.status(201).json(newPost);
     } catch (error) {
@@ -71,14 +59,9 @@ const createPost = async (req, res) => {
  */
 const updatePost = async (req, res) => {
     try {
-        const updatedPost = await Post.findByIdAndUpdate(
+        const updatedPost = await postService.updatePost(
             req.params.id,
-            {
-                title: req.body.title,
-                author: req.body.author,
-                tags: req.body.tags
-            },
-            { new: true }
+            req.body
         );
 
         if (!updatedPost) {
@@ -101,7 +84,7 @@ const updatePost = async (req, res) => {
  */
 const deletePost = async (req, res) => {
     try {
-        const deletedPost = await Post.findByIdAndDelete(req.params.id);
+        const deletedPost = await postService.deletePost(req.params.id);
 
         if (!deletedPost) {
             return res.status(404).json({
