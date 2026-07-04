@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-export default function PostForm({ onSubmit }) {
+export default function PostForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [coverImage, setCoverImage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title.trim() || !content.trim()) {
@@ -14,25 +14,49 @@ export default function PostForm({ onSubmit }) {
       return;
     }
 
+    
+    // add content and coverImage once backend supports them
+
     const newPost = {
-      title,
-      content,
+      title: title.trim(),
+      author: "Namrata", // Replace with logged-in user later
       tags: tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag !== ""),
-      coverImage,
     };
 
-    if (onSubmit) {
-      onSubmit(newPost);
-    }
+    try {
+      const response = await fetch("http://localhost:5000/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPost),
+      });
 
-    // Clear form after submission
-    setTitle("");
-    setContent("");
-    setTags("");
-    setCoverImage("");
+      if (!response.ok) {
+        throw new Error("Failed to publish post");
+      }
+
+      const data = await response.json();
+
+      console.log("Created Post:", data);
+
+      alert("Post published successfully!");
+
+      // Clear form
+      setTitle("");
+      setContent("");
+      setTags("");
+      setCoverImage("");
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Could not connect to the backend. Make sure the backend server is running."
+      );
+    }
   };
 
   return (
@@ -81,7 +105,7 @@ export default function PostForm({ onSubmit }) {
         <br />
         <input
           type="text"
-          placeholder="https://..."
+          placeholder="https://example.com/image.jpg"
           value={coverImage}
           onChange={(e) => setCoverImage(e.target.value)}
         />

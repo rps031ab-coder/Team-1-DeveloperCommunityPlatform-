@@ -7,22 +7,39 @@ export default function Navbar() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "20px",
-        borderBottom: "1px solid #ccc",
-        marginBottom: "20px",
+        padding: "20px 40px",
+        borderBottom: "1px solid #ddd",
+        backgroundColor: "#fff",
       }}
     >
-      <h1>DevConnect</h1>
+      <Link
+        href="/"
+        style={{
+          textDecoration: "none",
+          color: "black",
+        }}
+      >
+        <h1 style={{ margin: 0 }}>DevConnect</h1>
+      </Link>
 
-      <div>
+      <div style={{ display: "flex", gap: "20px" }}>
         <Link
           href="/"
-          style={{ marginRight: "20px" }}
+          style={{
+            textDecoration: "none",
+            color: "black",
+          }}
         >
           Home
         </Link>
 
-        <Link href="/create">
+        <Link
+          href="/create"
+          style={{
+            textDecoration: "none",
+            color: "black",
+          }}
+        >
           Create Post
         </Link>
       </div>

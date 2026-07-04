@@ -4,46 +4,37 @@ import PostCard from "../components/PostCard";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Temporary data
-    const samplePosts = [
-      {
-        id: 1,
-        title: "React Basics",
-        description:
-          "Learn the fundamentals of React and build your first components.",
-        tags: ["React", "JavaScript"],
-        likes: 10,
-      },
-      {
-        id: 2,
-        title: "Node.js Guide",
-        description:
-          "Understand how Node.js works and build backend applications.",
-        tags: ["Node.js", "Backend"],
-        likes: 5,
-      },
-      {
-        id: 3,
-        title: "MongoDB Introduction",
-        description:
-          "Learn how to store and retrieve data using MongoDB.",
-        tags: ["MongoDB", "Database"],
-        likes: 8,
-      },
-    ];
+    async function fetchPosts() {
+      try {
+        const response = await fetch("http://localhost:5000/posts");
 
-    setPosts(samplePosts);
+        if (!response.ok) {
+          throw new Error("Failed to fetch posts");
+        }
 
-    //backend
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Replace localhost URL with deployed backend URL in future
+    fetchPosts();
   }, []);
 
   return (
     <Layout>
       <h1>Developer Community</h1>
 
-      {posts.length === 0 ? (
+      {loading ? (
+        <p>Loading posts...</p>
+      ) : posts.length === 0 ? (
         <p>No posts available.</p>
       ) : (
         posts.map((post) => (
@@ -51,9 +42,10 @@ export default function Home() {
             key={post.id}
             id={post.id}
             title={post.title}
-            description={post.description}
+            author={post.author}
             tags={post.tags}
             likes={post.likes}
+            commentCount={post.commentCount}
           />
         ))
       )}

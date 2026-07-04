@@ -13,32 +13,32 @@ export default function TagPage() {
   useEffect(() => {
     if (!tag) return;
 
-    
+    // Replace with backend API when tag filtering is available
+
     const samplePosts = [
       {
         id: 1,
         title: "React Basics",
-        description: "Learn React from scratch.",
+        author: "Namrata",
         tags: ["React", "JavaScript"],
         likes: 10,
+        commentCount: 4,
       },
       {
         id: 2,
         title: "React Hooks",
-        description: "Understanding useState and useEffect.",
+        author: "John",
         tags: ["React"],
         likes: 15,
+        commentCount: 7,
       },
     ];
 
-    // Filter posts by selected tag
     const filteredPosts = samplePosts.filter((post) =>
       post.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
     );
 
     setPosts(filteredPosts);
-
-    //backend
   }, [tag]);
 
   return (
@@ -53,9 +53,10 @@ export default function TagPage() {
             key={post.id}
             id={post.id}
             title={post.title}
-            description={post.description}
+            author={post.author}
             tags={post.tags}
             likes={post.likes}
+            commentCount={post.commentCount}
           />
         ))
       )}

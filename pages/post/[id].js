@@ -11,20 +11,26 @@ export default function PostPage() {
 
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
+  const [username, setUsername] = useState("");
+  const [commentText, setCommentText] = useState("");
 
   useEffect(() => {
     if (!id) return;
 
-    
+    //  Replace with GET /posts/:id when backend is integrated
+
     const samplePost = {
       id,
       title: "React Basics",
+      author: "Namrata",
       content:
         "React is a JavaScript library used for building user interfaces. It helps developers create reusable UI components and build modern web applications.",
       tags: ["React", "JavaScript"],
       likes: 10,
+      commentCount: 2,
     };
 
+    //  Replace with GET /comments when backend is available
     const sampleComments = [
       {
         id: 1,
@@ -42,22 +48,28 @@ export default function PostPage() {
 
     setPost(samplePost);
     setComments(sampleComments);
-
-    //backend
   }, [id]);
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
 
-    alert("Comment submitted!");
+    if (!username.trim() || !commentText.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
-    //backend
+    //  POST comment to backend
+
+    alert("Comment submitted successfully!");
+
+    setUsername("");
+    setCommentText("");
   };
 
   if (!post) {
     return (
       <Layout>
-        <p>Loading...</p>
+        <p>Loading post...</p>
       </Layout>
     );
   }
@@ -65,6 +77,10 @@ export default function PostPage() {
   return (
     <Layout>
       <h1>{post.title}</h1>
+
+      <p>
+        <strong>Author:</strong> {post.author}
+      </p>
 
       <p> {post.likes} Likes</p>
 
@@ -74,20 +90,25 @@ export default function PostPage() {
         ))}
       </div>
 
-      <p>{post.content}</p>
+      {/* Backend currently doesn't return content */}
+      {post.content && <p>{post.content}</p>}
 
       <hr />
 
-      <h2>Comments</h2>
+      <h2>Comments ({comments.length})</h2>
 
-      {comments.map((comment) => (
-        <CommentCard
-          key={comment.id}
-          username={comment.username}
-          text={comment.text}
-          createdAt={comment.createdAt}
-        />
-      ))}
+      {comments.length === 0 ? (
+        <p>No comments yet.</p>
+      ) : (
+        comments.map((comment) => (
+          <CommentCard
+            key={comment.id}
+            username={comment.username}
+            text={comment.text}
+            createdAt={comment.createdAt}
+          />
+        ))
+      )}
 
       <hr />
 
@@ -97,6 +118,8 @@ export default function PostPage() {
         <input
           type="text"
           placeholder="Your Name"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <br />
@@ -105,6 +128,8 @@ export default function PostPage() {
         <textarea
           rows="4"
           placeholder="Write your comment..."
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
         />
 
         <br />
