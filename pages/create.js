@@ -1,39 +1,29 @@
 import Layout from "../components/Layout";
+import PostForm from "../components/PostForm";
 
 export default function Create() {
+
+  const handleCreatePost = async (newPost) => {
+    console.log("New Post:", newPost);
+
+    
+    //api
+    
+
+    alert("Post submitted successfully!");
+  };
+
   return (
     <Layout>
-      <h1>Create New Post</h1>
+      <div style={{ padding: "20px" }}>
+        <h1>Create New Post</h1>
 
-      <form>
-        <input
-          type="text"
-          placeholder="Title"
-        />
+        <p>
+          Share your knowledge with the developer community.
+        </p>
 
-        <br />
-        <br />
-
-        <textarea
-          placeholder="Content"
-          rows="5"
-        />
-
-        <br />
-        <br />
-
-        <input
-          type="text"
-          placeholder="Tags"
-        />
-
-        <br />
-        <br />
-
-        <button>
-          Submit
-        </button>
-      </form>
+        <PostForm onSubmit={handleCreatePost} />
+      </div>
     </Layout>
   );
 }
