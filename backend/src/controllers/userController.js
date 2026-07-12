@@ -1,27 +1,26 @@
-function getAllUsers(req, res) {
+const { registerUser } = require("../services/userService");
 
-    const developers = [
+const register = async (req, res) => {
+    try {
+        const user = await registerUser(req.body);
 
-        {
-            id: 1,
-            name: "Rudra",
-            role: "Backend Developer"
-        },
-
-        {
-            id: 2,
-            name: "Namrata",
-            role: "Frontend Developer"
-        }
-
-    ];
-
-    res.json(developers);
-
-}
+        res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                bio: user.bio,
+                profileImage: user.profileImage,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: error.message,
+        });
+    }
+};
 
 module.exports = {
-
-    getAllUsers
-
+    register,
 };
