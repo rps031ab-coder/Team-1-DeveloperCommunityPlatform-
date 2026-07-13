@@ -50,7 +50,8 @@ const createPost = async (req, res) => {
 
         const newPost = await postService.createPost(postData);
         return res.status(201).json(newPost);
-    } catch (error) {
+        } 
+        catch (error) {
         return res.status(500).json({
             message: "Error creating post",
             error: error.message
@@ -65,7 +66,8 @@ const updatePost = async (req, res) => {
     try {
         const updatedPost = await postService.updatePost(
             req.params.id,
-            req.body
+            req.body,
+            req.user.userId
         );
 
         if (!updatedPost) {
@@ -75,7 +77,8 @@ const updatePost = async (req, res) => {
         }
 
         return res.status(200).json(updatedPost);
-    } catch (error) {
+        }
+        catch (error) {
         return res.status(500).json({
             message: "Error updating post",
             error: error.message
@@ -86,9 +89,12 @@ const updatePost = async (req, res) => {
 /**
  * DELETE /posts/:id
  */
-const deletePost = async (req, res) => {
+const deletePost = async (req,res) => {
     try {
-        const deletedPost = await postService.deletePost(req.params.id);
+        const deletedPost = await postService.deletePost(
+            req.params.id,
+            req.user.userId
+        );
 
         if (!deletedPost) {
             return res.status(404).json({

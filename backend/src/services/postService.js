@@ -19,13 +19,20 @@ const createPost = async (postData) => {
     });
 };
 
-const updatePost = async (id, postData) => {
+const updatePost = async (id, postData, userId) => {
+    const post = await Post.findById(id);
+
+    if (!post) {
+        return null;
+    }
+    if (post.author.toString() !== userId) {
+    throw new Error("You are not authorized to update this post");
+    }
     return await Post.findByIdAndUpdate(
         id,
         {
             title: postData.title,
             content: postData.content,
-            author: postData.author,
             tags: postData.tags
         },
         { new: true,
@@ -34,7 +41,14 @@ const updatePost = async (id, postData) => {
     );
 };
 
-const deletePost = async (id) => {
+const deletePost = async (id, userId) => {
+    const post = await Post.findById(id);
+    if(!post){
+         return null
+    }
+    if(post.author.toString() !== userId){
+          throw new Error("You are not authorized to delete this post");
+    }
     return await Post.findByIdAndDelete(id);
 };
 
