@@ -48,8 +48,38 @@ const getComments = async (postId) => {
     return comments;
 };
 
+const deleteComment = async (commentId, userId) => {
+
+    // 1. Find the comment
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+        throw new Error("Comment not found");
+    }
+
+    // 2. Check ownership
+    if (comment.author.toString() !== userId) {
+        throw new Error("You are not authorized to delete this comment");
+    }
+
+    // 3. Delete the comment
+    const deletedComment = await Comment.findByIdAndDelete(commentId);
+
+    // 4. Find the parent post
+    const post = await Post.findById(deletedComment.post);
+
+    // 5. Decrement comments count
+    post.commentsCount--;
+
+    // 6. Save the updated post
+    await post.save();
+
+    // 7. Return deleted comment
+    return deletedComment;
+};
 module.exports = {
     createComment,
-    getComments
+    getComments,
+    deleteComment
 };
 

@@ -46,7 +46,29 @@ const getComments = async (req, res) => {
 
     }
 };
+
+const deleteComment = async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+
+        const comment = await commentService.deleteComment(
+            commentId,
+            userId
+        );
+
+        return res.status(200).json({
+            message: "Comment deleted successfully",
+            comment,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
 module.exports = {
     createComment,
-    getComments
+    getComments,
+    deleteComment
 };
