@@ -1,3 +1,4 @@
+const validateObjectId = require("../middlewares/validateObjectId");
 const validatePostMiddleware = require("../middlewares/validatePostMiddleware");
 const express = require("express");
 const authMiddleware = require("../middlewares/authMiddleware");
@@ -20,22 +21,22 @@ const {
 
 router.get("/", getAllPosts);
 
-router.get("/:id", getPostById);
+router.get("/:id", validateObjectId("id"), getPostById);
 
 router.post("/", authMiddleware, validatePostMiddleware, createPost);
 
-router.put("/:id", authMiddleware, validatePostMiddleware, updatePost);
+router.put("/:id", validateObjectId("id"), authMiddleware, validatePostMiddleware, updatePost);
 
-router.delete("/:id", authMiddleware, deletePost);
+router.delete("/:id", validateObjectId("id"), authMiddleware, deletePost);
 
 // Likes Routes
-router.post("/:id/like", authMiddleware, likePost);
+router.post("/:id/like", validateObjectId("id"), authMiddleware, likePost);
 
-router.delete("/:id/like", authMiddleware, unlikePost);
+router.delete("/:id/like", validateObjectId("id"), authMiddleware, unlikePost);
 
 // Comment Routes
-router.post("/:id/comments", authMiddleware, createComment);
+router.post("/:id/comments", validateObjectId("id"), authMiddleware, createComment);
 
-router.get("/:id/comments", getComments);
+router.get("/:id/comments", validateObjectId("id"), getComments);
 
 module.exports = router;
