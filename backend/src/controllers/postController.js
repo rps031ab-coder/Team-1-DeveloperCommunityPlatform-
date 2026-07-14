@@ -114,10 +114,50 @@ const deletePost = async (req,res) => {
     }
 };
 
+//Like Post
+const likePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.userId;
+
+    const post = await postService.likePost(postId, userId);
+
+    res.status(200).json({
+      message: "Post liked successfully",
+      post,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+};
+
+const unlikePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user.userId;
+
+    const post = await postService.unlikePost(postId, userId);
+
+    res.status(200).json({
+      message: "Post unliked successfully",
+      post,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+};
+
+
 module.exports = {
     getAllPosts,
     getPostById,
     createPost,
     updatePost,
-    deletePost
+    deletePost,
+    likePost,
+    unlikePost
 };
