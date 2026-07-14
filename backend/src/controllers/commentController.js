@@ -67,8 +67,32 @@ const deleteComment = async (req, res) => {
         });
     }
 };
+
+const updateComment = async (req, res) => {
+    try {
+        const commentId = req.params.commentId;
+        const userId = req.user.userId;
+        const { content } = req.body;
+
+        const comment = await commentService.updateComment(
+            commentId,
+            userId,
+            content
+        );
+
+        return res.status(200).json({
+            message: "Comment updated successfully",
+            comment,
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
 module.exports = {
     createComment,
     getComments,
-    deleteComment
+    deleteComment,
+    updateComment
 };

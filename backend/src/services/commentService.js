@@ -77,9 +77,35 @@ const deleteComment = async (commentId, userId) => {
     // 7. Return deleted comment
     return deletedComment;
 };
+
+const updateComment = async (commentId, userId, content) => {
+
+    // 1. Find the comment
+    const comment = await Comment.findById(commentId);
+
+    // 2. Check existence
+    if (!comment) {
+        throw new Error("Comment not found");
+    }
+
+    // 3. Ownership check
+    if (comment.author.toString() !== userId) {
+        throw new Error("You are not authorized to update this comment");
+    }
+
+    // 4. Update content
+    comment.content = content;
+
+    // 5. Save
+    await comment.save();
+
+    // 6. Return updated comment
+    return comment;
+};
 module.exports = {
     createComment,
     getComments,
-    deleteComment
+    deleteComment,
+    updateComment
 };
 
