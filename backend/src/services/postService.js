@@ -2,16 +2,107 @@ const AppError = require("../errors/AppError");
 const Post = require("../models/Post");
 const User = require("../models/User");
 
-const getAllPosts = async (author) => {
-    const query = author ? { author } : {};
+const getAllPosts = async (queryParams) => {
+    const {
+        page = 1,
+        limit = 10,
+        sort = "-createdAt",
+        search,
+        tag,
+        author,
+        fields,
+        status,
+    } = queryParams;
 
-    return await Post.find(query);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    if (
+    Number.isNaN(pageNumber) ||
+    pageNumber < 1 ||
+    Number.isNaN(limitNumber) ||
+    limitNumber < 1 ||
+    limitNumber > 100
+    ) {
+      throw new AppError(
+        "Invalid page or limit parameter",
+        400
+    );
+    }
+
+    let selectFields = "";
+    if (fields) {
+    selectFields = fields.split(",").join(" ");
+    }
+    const filter = {};
+
+    // Filter by author
+    if (author) {
+        filter.author = author;
+    }
+
+    // Filter by tag
+    if (tag) {
+         filter.tags = {
+         $in: tag.split(","),
+         };
+    }
+    if (status) {
+    filter.status = status;
+    }
+    // Search in title or content
+    if (search) {
+        filter.$or = [
+            {
+                title: {
+                    $regex: search,
+                    $options: "i",
+                },
+            },
+            {
+                content: {
+                    $regex: search,
+                    $options: "i",
+                },
+            },
+        ];
+    }
+
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const posts = await Post.find(filter)
+        .populate("author", "username profileImage")
+        .select(selectFields)
+        .sort(sort)
+        .skip(skip)
+        .limit(limitNumber);
+
+    const totalPosts = await Post.countDocuments(filter);
+    const totalPages = Math.max(
+    1,
+    Math.ceil(totalPosts / limitNumber)
+    );
+
+    const currentPage = pageNumber;
+
+    const hasNextPage = currentPage < totalPages;
+
+    const hasPreviousPage = currentPage > 1;
+    return {
+    totalPosts,
+    currentPage,
+    totalPages,
+    limit: limitNumber,
+    hasNextPage,
+    hasPreviousPage,
+    posts,
+    };
 };
 
 const getPostById = async (id) => {
-    const post = await Post.findById(id);
-
-    if (!post) {
+    const post = await Post.findById(id)
+    .populate("author", "username profileImage");
+     if (!post) {
         throw new AppError("Post not found", 404);
     }
 

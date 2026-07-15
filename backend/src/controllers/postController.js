@@ -5,7 +5,7 @@ const postService = require("../services/postService");
  * GET /posts
  */
 const getAllPosts = asyncHandler(async (req, res) => {
-    const posts = await postService.getAllPosts(req.query.author);
+    const posts = await postService.getAllPosts(req.query);
 
     res.status(200).json(posts);
 });
