@@ -1,5 +1,7 @@
+const AppError = require("../errors/AppError");
 const Post = require("../models/Post");
 const User = require("../models/User");
+
 const getAllPosts = async (author) => {
     const query = author ? { author } : {};
 
@@ -7,7 +9,13 @@ const getAllPosts = async (author) => {
 };
 
 const getPostById = async (id) => {
-    return await Post.findById(id);
+    const post = await Post.findById(id);
+
+    if (!post) {
+        throw new AppError("Post not found", 404);
+    }
+
+    return post;
 };
 
 const createPost = async (postData) => {
@@ -15,7 +23,7 @@ const createPost = async (postData) => {
         title: postData.title,
         content: postData.content,
         author: postData.author,
-        tags: postData.tags
+        tags: postData.tags,
     });
 };
 
@@ -23,97 +31,93 @@ const updatePost = async (id, postData, userId) => {
     const post = await Post.findById(id);
 
     if (!post) {
-        return null;
+        throw new AppError("Post not found", 404);
     }
+
     if (post.author.toString() !== userId) {
-    throw new Error("You are not authorized to update this post");
+        throw new AppError(
+            "You are not authorized to update this post",
+            403
+        );
     }
+
     return await Post.findByIdAndUpdate(
         id,
         {
-            title: postData.title,
-            content: postData.content,
-            tags: postData.tags
+            ...postData,
+            isEdited: true,
         },
-        { new: true,
-          runValidators: true  
+        {
+            new: true,
+            runValidators: true,
         }
     );
 };
 
 const deletePost = async (id, userId) => {
     const post = await Post.findById(id);
-    if(!post){
-         return null
+
+    if (!post) {
+        throw new AppError("Post not found", 404);
     }
-    if(post.author.toString() !== userId){
-          throw new Error("You are not authorized to delete this post");
+
+    if (post.author.toString() !== userId) {
+        throw new AppError(
+            "You are not authorized to delete this post",
+            403
+        );
     }
+
     return await Post.findByIdAndDelete(id);
 };
 
-
 const likePost = async (postId, userId) => {
-    // 1. Find the post
     const post = await Post.findById(postId);
 
     if (!post) {
-        throw new Error("Post not found");
+        throw new AppError("Post not found", 404);
     }
 
-    // 2. Find the user
     const user = await User.findById(userId);
 
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found", 404);
     }
 
-    // 3. Check duplicate like
-    if (post.likes.some(id => id.toString() === userId)){
-        throw new Error("Post already liked");
+    if (post.likes.some((id) => id.equals(userId))) {
+        throw new AppError("Post already liked", 409);
     }
 
-    // 4. Update both documents
     post.likes.push(userId);
-
     user.likedPosts.push(postId);
 
-    // 5. Save both
     await post.save();
-
     await user.save();
 
     return post;
 };
 
 const unlikePost = async (postId, userId) => {
-    // 1. Find the post
     const post = await Post.findById(postId);
 
     if (!post) {
-        throw new Error("Post not found");
+        throw new AppError("Post not found", 404);
     }
 
-    // 2. Find the user
     const user = await User.findById(userId);
 
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError("User not found", 404);
     }
 
-    // 3. Check if the post is actually liked
-    if (!post.likes.some(id => id.toString() === userId)) {
-        throw new Error("Post is not liked yet");
+    if (!post.likes.some((id) => id.equals(userId))) {
+        throw new AppError("Post is not liked yet", 409);
     }
 
-    // 4. Remove the relationship
     post.likes.pull(userId);
-
     user.likedPosts.pull(postId);
 
-    // 5. Save both documents
     await post.save();
-
     await user.save();
 
     return post;
@@ -126,5 +130,5 @@ module.exports = {
     updatePost,
     deletePost,
     likePost,
-    unlikePost
+    unlikePost,
 };

@@ -1,13 +1,13 @@
+const AppError = require("../errors/AppError");
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
 
 const createComment = async (postId, userId, content) => {
-
     // 1. Check whether post exists
     const post = await Post.findById(postId);
 
     if (!post) {
-        throw new Error("Post not found");
+        throw new AppError("Post not found", 404);
     }
 
     // 2. Create the comment
@@ -26,13 +26,13 @@ const createComment = async (postId, userId, content) => {
     // 5. Return created comment
     return comment;
 };
-const getComments = async (postId) => {
 
+const getComments = async (postId) => {
     // 1. Check if post exists
     const post = await Post.findById(postId);
 
     if (!post) {
-        throw new Error("Post not found");
+        throw new AppError("Post not found", 404);
     }
 
     // 2. Fetch all comments
@@ -49,17 +49,19 @@ const getComments = async (postId) => {
 };
 
 const deleteComment = async (commentId, userId) => {
-
     // 1. Find the comment
     const comment = await Comment.findById(commentId);
 
     if (!comment) {
-        throw new Error("Comment not found");
+        throw new AppError("Comment not found", 404);
     }
 
     // 2. Check ownership
     if (comment.author.toString() !== userId) {
-        throw new Error("You are not authorized to delete this comment");
+        throw new AppError(
+            "You are not authorized to delete this comment",
+            403
+        );
     }
 
     // 3. Delete the comment
@@ -79,18 +81,20 @@ const deleteComment = async (commentId, userId) => {
 };
 
 const updateComment = async (commentId, userId, content) => {
-
     // 1. Find the comment
     const comment = await Comment.findById(commentId);
 
     // 2. Check existence
     if (!comment) {
-        throw new Error("Comment not found");
+        throw new AppError("Comment not found", 404);
     }
 
     // 3. Ownership check
     if (comment.author.toString() !== userId) {
-        throw new Error("You are not authorized to update this comment");
+        throw new AppError(
+            "You are not authorized to update this comment",
+            403
+        );
     }
 
     // 4. Update content
@@ -102,10 +106,10 @@ const updateComment = async (commentId, userId, content) => {
     // 6. Return updated comment
     return comment;
 };
+
 module.exports = {
     createComment,
     getComments,
     deleteComment,
-    updateComment
+    updateComment,
 };
-

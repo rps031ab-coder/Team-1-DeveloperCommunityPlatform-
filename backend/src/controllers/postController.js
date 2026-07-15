@@ -1,156 +1,95 @@
+const asyncHandler = require("../utils/asyncHandler");
 const postService = require("../services/postService");
 
 /**
  * GET /posts
  */
-const getAllPosts = async (req, res) => {
-    try {
-        const posts = await postService.getAllPosts(req.query.author);
+const getAllPosts = asyncHandler(async (req, res) => {
+    const posts = await postService.getAllPosts(req.query.author);
 
-        return res.status(200).json(posts);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Failed to fetch posts",
-            error: error.message
-        });
-    }
-};
+    res.status(200).json(posts);
+});
 
 /**
  * GET /posts/:id
  */
-const getPostById = async (req, res) => {
-    try {
-        const post = await postService.getPostById(req.params.id);
+const getPostById = asyncHandler(async (req, res) => {
+    const post = await postService.getPostById(req.params.id);
 
-        if (!post) {
-            return res.status(404).json({
-                message: "Post not found"
-            });
-        }
-
-        return res.status(200).json(post);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error fetching post",
-            error: error.message
-        });
-    }
-};
+    res.status(200).json(post);
+});
 
 /**
  * POST /posts
  */
-const createPost = async (req, res) => {
-    try {
-        const postData = {
-                 ...req.body,
-                 author: req.user.userId,
-        };
+const createPost = asyncHandler(async (req, res) => {
+    const postData = {
+        ...req.body,
+        author: req.user.userId,
+    };
 
-        const newPost = await postService.createPost(postData);
-        return res.status(201).json(newPost);
-        } 
-        catch (error) {
-        return res.status(500).json({
-            message: "Error creating post",
-            error: error.message
-        });
-    }
-};
+    const newPost = await postService.createPost(postData);
+
+    res.status(201).json(newPost);
+});
 
 /**
  * PUT /posts/:id
  */
-const updatePost = async (req, res) => {
-    try {
-        const updatedPost = await postService.updatePost(
-            req.params.id,
-            req.body,
-            req.user.userId
-        );
+const updatePost = asyncHandler(async (req, res) => {
+    const updatedPost = await postService.updatePost(
+        req.params.id,
+        req.body,
+        req.user.userId
+    );
 
-        if (!updatedPost) {
-            return res.status(404).json({
-                message: "Post not found"
-            });
-        }
-
-        return res.status(200).json(updatedPost);
-        }
-        catch (error) {
-        return res.status(500).json({
-            message: "Error updating post",
-            error: error.message
-        });
-    }
-};
+    res.status(200).json(updatedPost);
+});
 
 /**
  * DELETE /posts/:id
  */
-const deletePost = async (req,res) => {
-    try {
-        const deletedPost = await postService.deletePost(
-            req.params.id,
-            req.user.userId
-        );
-
-        if (!deletedPost) {
-            return res.status(404).json({
-                message: "Post not found"
-            });
-        }
-
-        return res.status(200).json({
-            message: "Post deleted successfully",
-            deletedPost
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Error deleting post",
-            error: error.message
-        });
-    }
-};
-
-//Like Post
-const likePost = async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const userId = req.user.userId;
-
-    const post = await postService.likePost(postId, userId);
+const deletePost = asyncHandler(async (req, res) => {
+    const deletedPost = await postService.deletePost(
+        req.params.id,
+        req.user.userId
+    );
 
     res.status(200).json({
-      message: "Post liked successfully",
-      post,
+        message: "Post deleted successfully",
+        deletedPost,
     });
-  } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
-  }
-};
+});
 
-const unlikePost = async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const userId = req.user.userId;
-
-    const post = await postService.unlikePost(postId, userId);
+/**
+ * POST /posts/:id/like
+ */
+const likePost = asyncHandler(async (req, res) => {
+    const post = await postService.likePost(
+        req.params.id,
+        req.user.userId
+    );
 
     res.status(200).json({
-      message: "Post unliked successfully",
-      post,
+        message: "Post liked successfully",
+        post,
     });
-  } catch (error) {
-    res.status(400).json({
-      message: error.message,
-    });
-  }
-};
+});
 
+/**
+ * DELETE /posts/:id/like
+ */
+const unlikePost = asyncHandler(async (req, res) => {
+    const post = await postService.unlikePost(
+        req.params.id,
+        req.user.userId
+    );
+
+    res.status(200).json({
+        message: "Post unliked successfully",
+        post,
+    });
+});
 
 module.exports = {
     getAllPosts,
@@ -159,5 +98,5 @@ module.exports = {
     updatePost,
     deletePost,
     likePost,
-    unlikePost
+    unlikePost,
 };

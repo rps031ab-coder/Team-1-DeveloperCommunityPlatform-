@@ -1,98 +1,80 @@
+const asyncHandler = require("../utils/asyncHandler");
 const commentService = require("../services/commentService");
 
-const createComment = async (req, res) => {
-    try {
+/**
+ * POST /posts/:id/comments
+ */
+const createComment = asyncHandler(async (req, res) => {
+    const postId = req.params.id;
+    const userId = req.user.userId;
+    const { content } = req.body;
 
-        const postId = req.params.id;
-        const userId = req.user.userId;
-        const { content } = req.body;
+    const comment = await commentService.createComment(
+        postId,
+        userId,
+        content
+    );
 
-        const comment = await commentService.createComment(
-            postId,
-            userId,
-            content
-        );
+    res.status(201).json({
+        message: "Comment added successfully",
+        comment,
+    });
+});
 
-        return res.status(201).json({
-            message: "Comment added successfully",
-            comment,
-        });
+/**
+ * GET /posts/:id/comments
+ */
+const getComments = asyncHandler(async (req, res) => {
+    const postId = req.params.id;
 
-    } catch (error) {
+    const comments = await commentService.getComments(postId);
 
-        return res.status(400).json({
-            message: error.message,
-        });
+    res.status(200).json({
+        comments,
+    });
+});
 
-    }
-};
+/**
+ * DELETE /comments/:commentId
+ */
+const deleteComment = asyncHandler(async (req, res) => {
+    const commentId = req.params.commentId;
+    const userId = req.user.userId;
 
-const getComments = async (req, res) => {
-    try {
+    const comment = await commentService.deleteComment(
+        commentId,
+        userId
+    );
 
-        const postId = req.params.id;
+    res.status(200).json({
+        message: "Comment deleted successfully",
+        comment,
+    });
+});
 
-        const comments = await commentService.getComments(postId);
+/**
+ * PUT /comments/:commentId
+ */
+const updateComment = asyncHandler(async (req, res) => {
+    const commentId = req.params.commentId;
+    const userId = req.user.userId;
+    const { content } = req.body;
 
-        return res.status(200).json({
-            comments,
-        });
+    const comment = await commentService.updateComment(
+        commentId,
+        userId,
+        content
+    );
 
-    } catch (error) {
+    res.status(200).json({
+        message: "Comment updated successfully",
+        comment,
+    });
+});
 
-        return res.status(400).json({
-            message: error.message,
-        });
-
-    }
-};
-
-const deleteComment = async (req, res) => {
-    try {
-        const commentId = req.params.commentId;
-        const userId = req.user.userId;
-
-        const comment = await commentService.deleteComment(
-            commentId,
-            userId
-        );
-
-        return res.status(200).json({
-            message: "Comment deleted successfully",
-            comment,
-        });
-    } catch (error) {
-        return res.status(400).json({
-            message: error.message,
-        });
-    }
-};
-
-const updateComment = async (req, res) => {
-    try {
-        const commentId = req.params.commentId;
-        const userId = req.user.userId;
-        const { content } = req.body;
-
-        const comment = await commentService.updateComment(
-            commentId,
-            userId,
-            content
-        );
-
-        return res.status(200).json({
-            message: "Comment updated successfully",
-            comment,
-        });
-    } catch (error) {
-        return res.status(400).json({
-            message: error.message,
-        });
-    }
-};
 module.exports = {
     createComment,
     getComments,
     deleteComment,
-    updateComment
+    updateComment,
 };
