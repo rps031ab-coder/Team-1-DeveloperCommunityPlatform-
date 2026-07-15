@@ -7,7 +7,11 @@ const postService = require("../services/postService");
 const getAllPosts = asyncHandler(async (req, res) => {
     const posts = await postService.getAllPosts(req.query);
 
-    res.status(200).json(posts);
+    res.status(200).json({
+    success: true,
+    message: "Posts fetched successfully",
+    data: posts,
+    });
 });
 
 /**
@@ -16,7 +20,11 @@ const getAllPosts = asyncHandler(async (req, res) => {
 const getPostById = asyncHandler(async (req, res) => {
     const post = await postService.getPostById(req.params.id);
 
-    res.status(200).json(post);
+    res.status(200).json({
+    success: true,
+    message: "Post fetched successfully",
+    data: post,
+    });
 });
 
 /**
@@ -30,7 +38,11 @@ const createPost = asyncHandler(async (req, res) => {
 
     const newPost = await postService.createPost(postData);
 
-    res.status(201).json(newPost);
+    res.status(201).json({
+    success: true,
+    message: "Post created successfully",
+    data: newPost,
+});
 });
 
 /**
@@ -43,7 +55,11 @@ const updatePost = asyncHandler(async (req, res) => {
         req.user.userId
     );
 
-    res.status(200).json(updatedPost);
+    res.status(200).json({
+    success: true,
+    message: "Post updated successfully",
+    data: updatedPost,
+    });
 });
 
 /**
@@ -56,8 +72,9 @@ const deletePost = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({
-        message: "Post deleted successfully",
-        deletedPost,
+    success: true,
+    message: "Post deleted successfully",
+    data: deletedPost,
     });
 });
 
@@ -71,8 +88,9 @@ const likePost = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({
-        message: "Post liked successfully",
-        post,
+    success: true,
+    message: "Post liked successfully",
+    data: post,
     });
 });
 
@@ -86,8 +104,9 @@ const unlikePost = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({
-        message: "Post unliked successfully",
-        post,
+    success: true,
+    message: "Post unliked successfully",
+    data: post,
     });
 });
 
