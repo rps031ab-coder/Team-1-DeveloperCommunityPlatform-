@@ -75,7 +75,8 @@ const getAllPosts = async (queryParams) => {
         .select(selectFields)
         .sort(sort)
         .skip(skip)
-        .limit(limitNumber);
+        .limit(limitNumber)
+        .lean();
 
     const totalPosts = await Post.countDocuments(filter);
     const totalPages = Math.max(
@@ -101,8 +102,10 @@ const getAllPosts = async (queryParams) => {
 
 const getPostById = async (id) => {
     const post = await Post.findById(id)
-    .populate("author", "username profileImage");
-     if (!post) {
+    .populate("author", "username profileImage")
+    .lean();
+
+    if (!post) {
         throw new AppError("Post not found", 404);
     }
 
@@ -139,7 +142,7 @@ const updatePost = async (id, postData, userId) => {
             isEdited: true,
         },
         {
-            new: true,
+            returnDocument: "after",
             runValidators: true,
         }
     );

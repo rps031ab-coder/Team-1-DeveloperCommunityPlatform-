@@ -16,8 +16,9 @@ const createComment = asyncHandler(async (req, res) => {
     );
 
     res.status(201).json({
+        success: true,
         message: "Comment added successfully",
-        comment,
+        data: comment,
     });
 });
 
@@ -30,7 +31,9 @@ const getComments = asyncHandler(async (req, res) => {
     const comments = await commentService.getComments(postId);
 
     res.status(200).json({
-        comments,
+         success: true,
+         message: "Comments fetched successfully",
+         data: comments,
     });
 });
 
@@ -47,8 +50,9 @@ const deleteComment = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({
+        success: true,
         message: "Comment deleted successfully",
-        comment,
+        data: comment,
     });
 });
 
@@ -67,8 +71,9 @@ const updateComment = asyncHandler(async (req, res) => {
     );
 
     res.status(200).json({
+        success: true,
         message: "Comment updated successfully",
-        comment,
+        data: comment,
     });
 });
 
